@@ -1,16 +1,20 @@
-#include <string.h>
-#include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <stdlib.h>
+#include <stdio.h>
+#include <arpa/inet.h>
+#include <string.h>
+#include <unistd.h>
+
 
 int socket_serveur;
 int socket_client;
 const char *message_bienvenue;
-const char *message = "";
+char message [50]= "";
 int len = 0;
 
 int creer_serveur(int port){
+
+	struct sockaddr_in addr;
 
 	socket_serveur = socket(AF_INET, SOCK_STREAM, 0);
 	if (socket_serveur == -1){
@@ -18,13 +22,13 @@ int creer_serveur(int port){
 		return -1;
 	}
 
-	struct sockaddr_in addrIPV4;
 
-	addrIPV4.sin_family = AF_INET;
-	addrIPV4.sin_port = htons(port);
-	addrIPV4.sin_addr.s_addr = INADDR_ANY;
 
-	if (bind(socket_serveur, (struct sockaddr *)&addrIPV4, sizeof(addrIPV4)) == -1){
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(port);
+	addr.sin_addr.s_addr = INADDR_ANY;
+
+	if (bind(socket_serveur, (struct sockaddr *)&addr, sizeof(addr)) == -1){
 		perror("bind socket_serveur");
 		return -1;
 	}
@@ -42,6 +46,7 @@ int creer_serveur(int port){
 	message_bienvenue = "Bonjour, bienvenue sur mon serveur\n";
 	write (socket_client, message_bienvenue, strlen(message_bienvenue));
 	while (1){
-		len = read(socket_client, message, strlen(message);
-		write (socket_client, message, len);
+		len = read(socket_client, message, 49);
+		write(socket_client, message, strlen(message));
+	}
 }

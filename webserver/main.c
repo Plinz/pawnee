@@ -2,7 +2,7 @@
 #include <string.h>
 #include "socket.h"
  
-int main (int argc, char **argv)
+int main ()
 {
 	if (creer_serveur(8080)==-1){
 		perror("creer_serveur");
