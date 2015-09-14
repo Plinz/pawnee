@@ -2,10 +2,13 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <stdlib.h>
 
 int socket_serveur;
 int socket_client;
 const char *message_bienvenue;
+const char *message = "";
+int len = 0;
 
 int creer_serveur(int port){
 
@@ -38,5 +41,7 @@ int creer_serveur(int port){
 
 	message_bienvenue = "Bonjour, bienvenue sur mon serveur\n";
 	write (socket_client, message_bienvenue, strlen(message_bienvenue));
-
+	while (1){
+		len = read(socket_client, message, strlen(message);
+		write (socket_client, message, len);
 }
