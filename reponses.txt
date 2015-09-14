@@ -1,0 +1,5 @@
+3.2.1 :
+1 _ Le serveur ne se relance pas car il est impossible de faire le bind car la socket étant toujours existante il est impossible d'avoir 2 socket sur la meme adresse.
+2 _ L'option z de nc ne permet pas au serveur d'envoyer de message, cela permet juste de faire la connexion puis la socket cliente est detruite
+3 _ Il n'y a pas telnet sur les machine saule
+4 _ La connexion ne se fait pas sur le 2eme client car on a pas fait de fork et le serveur attend tout le temps du client 1
