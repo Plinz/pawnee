@@ -23,11 +23,17 @@ int main ()
 			perror ("accept");
 		}
 
-		message_bienvenue = "Bonjour, bienvenue sur mon serveur\n";
-		write (socket_client, message_bienvenue, strlen(message_bienvenue));
-		while (1){
-			read(socket_client, message, 1023);
-			write(socket_client, message, strlen(message));
+		int pid = fork();
+		if (pid == 0){
+			message_bienvenue = "Bonjour, bienvenue sur mon serveur\n";
+			write (socket_client, message_bienvenue, strlen(message_bienvenue));
+			while (1){
+				read(socket_client, message, 1023);
+				write(socket_client, message, strlen(message));
+			}
+		}
+		else{
+			close(socket_client);
 		}
 	}
 	return 0;
