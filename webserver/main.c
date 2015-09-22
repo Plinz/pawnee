@@ -3,11 +3,14 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include "socket.h"
+#include <sys/types.h>
+
 
 int serv; 
 int socket_client;
 char message [1024]= "";
 const char *message_bienvenue;
+
 
 int main ()
 {
@@ -16,7 +19,7 @@ int main ()
 		perror("creer_serveur");
 		return -1;
 	}
-
+	initialiser_signaux();
 	while(1){
 		socket_client = accept (serv, NULL, NULL);
 		if (socket_client == -1){
@@ -38,3 +41,6 @@ int main ()
 	}
 	return 0;
 }
+
+
+
