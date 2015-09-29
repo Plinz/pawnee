@@ -8,7 +8,7 @@
 
 int serv; 
 int socket_client;
-char message [1024]= "";
+char message [1024]= "r";
 const char *message_bienvenue;
 
 
@@ -30,9 +30,10 @@ int main ()
 		if (pid == 0){
 			message_bienvenue = "Bienvenue à toi jeune padawan, tu es désormais connecté au serveur Kashyyyk, en bordure Médiane. Ce serveur est développé par Antoine Duquennoy et Paul Gronier, deux grands maîtres Jedi, dans le but de permettre une communication client-serveur d'une efficacité rivalisant avec la Force. Pour cela, il utilise le protocole TCP (avec un taux élevé de médicloriens) afin d'atteindre une vitesse lumière de transfert de donnée contrairement au protocole UDP (avec un taux de médicloriens très bas et une vitesse comparable à celle de C3-PO).\n";
 			write (socket_client, message_bienvenue, strlen(message_bienvenue));
-			while (1){
-				read(socket_client, message, 1023);
-				write(socket_client, message, strlen(message));
+			FILE * f;
+			f = fdopen(socket_client, "w+");
+			while(fgets(message, sizeof(message), f) != NULL){
+				fprintf(f, "<Pawnee> %s", message);
 			}
 		}
 		else{
