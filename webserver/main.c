@@ -10,7 +10,11 @@ int serv;
 int socket_client;
 char message [1024]= "r";
 const char *message_bienvenue;
-
+char* split1;
+char* split2;
+char* split3;
+char* splitm;
+char* splitM;
 
 int main ()
 {
@@ -32,9 +36,23 @@ int main ()
 			write (socket_client, message_bienvenue, strlen(message_bienvenue));
 			FILE * f;
 			f = fdopen(socket_client, "w+");
-			while(fgets(message, sizeof(message), f) != NULL){
-				fprintf(f, "<Pawnee> %s", message);
+			if (fgets(message, sizeof(message), f) != NULL){
+				split1 = strtok(message, " ");
+				strtok(NULL, " ");
+				split2 = strtok(NULL, " ");
+				split3 = strtok(NULL, " ");
+
+				if ((strcmp(split1,"GET")==0) && (split2 != NULL) && (split3 == NULL) && ((strstr(split2,"HTTP/1.0")==0) || (strstr(split2,"HTTP/1.1")==0))){
+					fprintf(f, "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Length: 17\r\n\r\n200 OK\r\n");
+				}
+				else{
+					fprintf(f, "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n");
+				}
+				while(fgets(message, sizeof(message), f) != NULL){
+					printf("<Pawnee> %s", message);
+				}
 			}
+
 		}
 		else{
 			close(socket_client);

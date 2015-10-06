@@ -36,6 +36,7 @@ int creer_serveur(int port){
 
 	if (listen(socket_serveur, 10) == -1){
 		perror("listen socket_serveur");
+
 		return -1;
 	}
 	return socket_serveur;
