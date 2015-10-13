@@ -1,20 +1,25 @@
-#include <stdio.h>
+
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <stdlib.h>
 #include "socket.h"
 #include <sys/types.h>
-
+#include <stdio.h>
 
 int serv; 
 int socket_client;
 char message [1024]= "r";
-const char *message_bienvenue;
-char* split1;
-char* split2;
+const char *message_bienvenue = "Bienvenue à toi jeune padawan, tu es désormais connecté au serveur Kashyyyk, en bordure Médiane. Ce serveur est développé par Antoine Duquennoy et Paul Gronier, deux grands maîtres Jedi, dans le but de permettre une communication client-serveur d'une efficacité rivalisant avec la Force. Pour cela, il utilise le protocole TCP (avec un taux élevé de médicloriens) afin d'atteindre une vitesse lumière de transfert de donnée contrairement au protocole UDP (avec un taux de médicloriens très bas et une vitesse comparable à celle de C3-PO).\n";
+char* methode;
+char* ressource;
 char* split3;
 char* splitm;
 char* splitM;
+char tok [1024];
+const char *e400 = "HTTP/1.1 400 Bad Request\r\nConnection: Close\r\nContent-Length: 17 \r\n\n400 Bad request\r";
+const char *e200 = "HTTP/1.1 200 OK\r\nContent-Length: ";
+FILE * f;
 
 int main ()
 {
@@ -32,27 +37,23 @@ int main ()
 
 		int pid = fork();
 		if (pid == 0){
-			message_bienvenue = "Bienvenue à toi jeune padawan, tu es désormais connecté au serveur Kashyyyk, en bordure Médiane. Ce serveur est développé par Antoine Duquennoy et Paul Gronier, deux grands maîtres Jedi, dans le but de permettre une communication client-serveur d'une efficacité rivalisant avec la Force. Pour cela, il utilise le protocole TCP (avec un taux élevé de médicloriens) afin d'atteindre une vitesse lumière de transfert de donnée contrairement au protocole UDP (avec un taux de médicloriens très bas et une vitesse comparable à celle de C3-PO).\n";
-			write (socket_client, message_bienvenue, strlen(message_bienvenue));
-			FILE * f;
 			f = fdopen(socket_client, "w+");
-			if (fgets(message, sizeof(message), f) != NULL){
-				split1 = strtok(message, " ");
+			fgets(message,sizeof(message),f);
+			while(fgets(tok,sizeof(tok),f)!=NULL && tok[0] != '\r' && tok[0]!= '\n' );
+				methode = strtok(message, " ");
 				strtok(NULL, " ");
-				split2 = strtok(NULL, " ");
+				ressource = strtok(NULL, " ");
 				split3 = strtok(NULL, " ");
-
-				if ((strcmp(split1,"GET")==0) && (split2 != NULL) && (split3 == NULL) && ((strstr(split2,"HTTP/1.0")==0) || (strstr(split2,"HTTP/1.1")==0))){
-					fprintf(f, "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Length: 17\r\n\r\n200 OK\r\n");
+				if ((strcmp(methode,"GET")==0) && (ressource != NULL) && (split3 == NULL) && ((strstr(ressource,"HTTP/1.0")==0) || (strstr(ressource,"HTTP/1.1")==0))){
+					fprintf(f,"<pawnne> %s %s : %d \n %s\n",message, e200,(int)strlen(message_bienvenue),message_bienvenue);
+					fflush(f);
+	     			fclose(f);
 				}
-				else{
-					fprintf(f, "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n");
-				}
-				while(fgets(message, sizeof(message), f) != NULL){
-					printf("<Pawnee> %s", message);
-				}
-			}
-
+				else {
+	      			fprintf(f,"%s",e400);
+					fflush(f);
+	     			fclose(f);
+	    		}
 		}
 		else{
 			close(socket_client);
