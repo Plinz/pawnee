@@ -1,4 +1,3 @@
-
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -38,28 +37,22 @@ int main ()
 		int pid = fork();
 		if (pid == 0){
 			f = fdopen(socket_client, "w+");
-			fgets(message,sizeof(message),f);
-			while(fgets(tok,sizeof(tok),f)!=NULL && tok[0] != '\r' && tok[0]!= '\n' );
-				methode = strtok(message, " ");
-				url = strtok(NULL, " ");
-				ressource = strtok(NULL, " ");
-				version = strtok(NULL, " ");
-				if ((strcmp(methode,"GET")==0) && (ressource != NULL) && (version == NULL) && ((strstr(ressource,"HTTP/1.0")==0) || (strstr(ressource,"HTTP/1.1")==0))){
-					if (!strcmp(url, "/")){
-						fprintf(f,"%s %s : %d \n %s\n",message, e200,(int)strlen(message_bienvenue),message_bienvenue);
-						fflush(f);
-	     				fclose(f);
-					}
-					else{
-						fprintf(f,"%s", e404);
-	      				fclose(f);
-					}
-				}
-				else {
-	      			fprintf(f,"%s",e400);
-					fflush(f);
-	     			fclose(f);
-	    		}
+			fgets_or_exit(message,sizeof(message),f);
+			req = parse_http_request(message, request);
+			skip_headers(f);
+
+			if (!req){
+				send_response(f, 400, "Bad Request", "400 : Bad Request");
+			}
+			else if(request->method == HTTP_UNSUPPORTED)
+				send_response(f, 405, "Method Not Allowed", "405 : Method Not Allowed");
+
+			else if(strcmp(request.url, "/") == 0)) {
+				send_response(f, 200, "OK", message_bienvenue);
+			}
+			else
+				send_response(fp, 404, "Not Found", "404 : Not Found");
+			fclose(fp);			
 		}
 		else{
 			close(socket_client);
