@@ -6,6 +6,10 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include <sys/stat.h> 
+#include <unistd.h>
+#include <fcntl.h>
+
 
 enum http_method {
 	HTTP_GET,
@@ -123,4 +127,41 @@ void initialiser_signaux(void)
 	{
 		perror("sigaction(SIGCHLD)");
 	}
+}
+
+char * rewrite_url ( char *url ){
+	return strtok(url,"?");
+}
+
+int check_and_open ( const char *url , const char * document_root ){
+  struct stat buf;
+  int fd;
+  char *tmpURL="";
+  char *tmpDOC="";
+
+  tmpURL=strdup(url);
+  tmpDOC=strdup(document_root);
+  strcat(tmpDOC,rewrite_url(tmpURL));
+  
+  if((stat(tmpDOC,&buf)!=-1) && ((fd = open(tmpDOC,O_RDONLY))!=-1) && (S_ISREG(buf.st_mode)==0)){
+	return fd;
+  }
+  else{
+	return -1;
+  }
+}
+
+int get_file_size(int fd){
+	struct stat buf;
+	fstat(fd, &buf);
+	return (buf.st_blocks*512);
+}
+
+int copy(int in, int out){
+	char buf [1024];
+	int n;
+	while((n = read(in, buf, 1024)) > 0){
+		write(out,buf,n);
+	}
+	return 0;
 }
