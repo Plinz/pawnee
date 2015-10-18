@@ -12,13 +12,6 @@ enum http_method {
 	HTTP_UNSUPPORTED,
 };
 
-typedef struct {
-	enum	http_method method;
-	int	major_version;
-	int	minor_version;
-	char	*url;
-} http_request;
-
 int socket_serveur;
 
 
