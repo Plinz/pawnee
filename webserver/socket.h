@@ -2,6 +2,11 @@
 #define __SOCKET_H__
 #include <stdio.h>
 
+enum http_method {
+	HTTP_GET,
+	HTTP_UNSUPPORTED,
+};
+
 typedef struct {
 	enum	http_method method;
 	int	major_version;
